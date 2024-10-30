@@ -341,6 +341,9 @@ impl TlsConnector {
             ssl.set_verify(SslVerifyMode::NONE);
         }
 
+        ssl.param_mut()
+            .set_flags(openssl::x509::verify::X509VerifyFlags::PARTIAL_CHAIN)?;
+
         let s = ssl.connect(domain, stream)?;
         Ok(TlsStream(s))
     }
