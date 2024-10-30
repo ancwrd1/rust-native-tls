@@ -94,13 +94,8 @@
 //!     }
 //! }
 //! ```
-#![doc(html_root_url = "https://docs.rs/native-tls/0.2")]
 #![warn(missing_docs)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-
-#[macro_use]
-#[cfg(any(target_os = "macos", target_os = "ios"))]
-extern crate lazy_static;
 
 #[cfg(target_os = "windows")]
 extern crate schannel;
@@ -111,16 +106,16 @@ use std::fmt;
 use std::io;
 use std::result;
 
-#[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "ios")))]
+#[cfg(not(any(target_os = "windows", target_vendor = "apple",)))]
 #[macro_use]
 extern crate log;
-#[cfg(any(target_os = "macos", target_os = "ios"))]
+#[cfg(any(target_vendor = "apple",))]
 #[path = "imp/security_framework.rs"]
 mod imp;
 #[cfg(target_os = "windows")]
 #[path = "imp/schannel.rs"]
 mod imp;
-#[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "ios")))]
+#[cfg(not(any(target_vendor = "apple", target_os = "windows",)))]
 #[path = "imp/openssl.rs"]
 mod imp;
 
@@ -362,6 +357,8 @@ pub enum Protocol {
 }
 
 /// A builder for `TlsConnector`s.
+///
+/// You can get one from [`TlsConnector::builder()`](TlsConnector::builder)
 pub struct TlsConnectorBuilder {
     identity: Option<Identity>,
     min_protocol: Option<Protocol>,
@@ -550,6 +547,8 @@ impl TlsConnector {
 }
 
 /// A builder for `TlsAcceptor`s.
+///
+/// You can get one from [`TlsAcceptor::builder()`](TlsAcceptor::builder)
 pub struct TlsAcceptorBuilder {
     identity: Identity,
     min_protocol: Option<Protocol>,
